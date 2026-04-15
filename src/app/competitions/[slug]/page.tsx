@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/Badge';
+import { Markdown } from '@/components/common/Markdown';
 import type { Competition, Project } from '@/types/portfolio.types';
 
 export default function CompetitionDetailPage() {
@@ -16,6 +17,7 @@ export default function CompetitionDetailPage() {
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/portfolio')
@@ -60,6 +62,8 @@ export default function CompetitionDetailPage() {
     );
   }
 
+  const galleryImages = competition.images || (competition.previewImage ? [competition.previewImage] : []);
+
   return (
     <Layout>
       <article className="container-custom section-spacing pt-32">
@@ -75,7 +79,7 @@ export default function CompetitionDetailPage() {
             <span className="group-hover:-translate-x-1 transition-transform">←</span> ALL ACHIEVEMENTS
           </Link>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-3 mb-6">
                 <Badge variant="default" className="text-lg py-1 px-4">{competition.award}</Badge>
@@ -98,28 +102,28 @@ export default function CompetitionDetailPage() {
               </div>
             </div>
 
+            {/* Certificate Highlight */}
             {competition.certificateImage && (
-              <div className="relative w-full aspect-[4/3] mb-20 overflow-hidden border border-black dark:border-white shadow-2xl">
+              <div className="relative w-full aspect-[4/3] mb-20 overflow-hidden border border-black dark:border-white shadow-2xl bg-gray-50 dark:bg-gray-900 group cursor-zoom-in" onClick={() => setSelectedImage(competition.certificateImage!)}>
                 <Image
                   src={competition.certificateImage}
                   alt="Certificate"
                   fill
-                  className="object-contain bg-gray-50 dark:bg-gray-900"
+                  className="object-contain p-4 md:p-12 transition-transform duration-500 group-hover:scale-[1.02]"
                   unoptimized
                 />
+                <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-md text-white text-[10px] font-mono px-3 py-1 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                  Click to Expand
+                </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
-              <div className="lg:col-span-8 prose dark:prose-invert max-w-none">
+              <div className="lg:col-span-8">
                 <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
                   The Journey
                 </h2>
-                <div className="space-y-6 text-xl leading-relaxed text-gray-800 dark:text-gray-300 font-light italic">
-                  {competition.longDescription.split('\n\n').map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
-                </div>
+                <Markdown content={competition.longDescription} />
               </div>
 
               <div className="lg:col-span-4">
@@ -145,23 +149,69 @@ export default function CompetitionDetailPage() {
               </div>
             </div>
 
-            {competition.previewImage && (
+            {/* Photo Gallery / Collage */}
+            {galleryImages.length > 0 && (
               <div className="mt-20">
-                <h2 className="text-xl font-mono uppercase tracking-widest mb-8 dark:text-white">Moment</h2>
-                <div className="relative w-full aspect-video overflow-hidden border border-black dark:border-white">
-                  <Image
-                    src={competition.previewImage}
-                    alt="Moment"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
+                <h2 className="text-xl font-mono uppercase tracking-widest mb-8 dark:text-white border-b border-black dark:border-white pb-2 inline-block">Moments</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {galleryImages.map((img, idx) => (
+                    <motion.div
+                      key={idx}
+                      whileHover={{ scale: 1.02 }}
+                      className={`relative overflow-hidden border border-black dark:border-white bg-gray-100 dark:bg-gray-800 cursor-zoom-in group ${
+                        idx === 0 && galleryImages.length % 2 !== 0 ? 'md:col-span-2 aspect-[21/9]' : 'aspect-video'
+                      }`}
+                      onClick={() => setSelectedImage(img)}
+                    >
+                      <Image
+                        src={img}
+                        alt={`Moment ${idx + 1}`}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                      />
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
         </motion.div>
       </article>
+
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-12 cursor-zoom-out"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full h-full max-w-6xl max-h-[90vh]"
+            >
+              <Image
+                src={selectedImage}
+                alt="Expanded View"
+                fill
+                className="object-contain"
+                unoptimized
+              />
+            </motion.div>
+            <button 
+              className="absolute top-8 right-8 text-white text-4xl font-light hover:text-blue-500 transition-colors"
+              onClick={() => setSelectedImage(null)}
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }

@@ -34,6 +34,7 @@ const ARTIFACT_TYPE_MAP: Record<string, ArtifactFile['type']> = {
   '.pptx':  'pdf',
   '.mp4':   'video',
   '.mov':   'video',
+  '.webm':  'video',
 };
 
 const ARTIFACT_CATEGORIES = new Set<ArtifactFile['category']>(['code', 'ppt', 'proposal']);
@@ -75,6 +76,15 @@ function getFirstImageIn(dir: string): string | undefined {
     const file = fs.readdirSync(dir).find(f => IMAGE_EXTS.has(path.extname(f)));
     return file ? toApiUrl(path.join(dir, file)) : undefined;
   } catch { return undefined; }
+}
+
+function getAllImagesIn(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  try {
+    return fs.readdirSync(dir)
+      .filter(f => IMAGE_EXTS.has(path.extname(f)))
+      .map(f => toApiUrl(path.join(dir, f)));
+  } catch { return []; }
 }
 
 function getLogoImage(folderPath: string): string | undefined {
@@ -175,6 +185,8 @@ function transformProject(base: BaseItem, metadata: Record<string, unknown>): Pr
 
 function transformCompetition(base: BaseItem, metadata: Record<string, unknown>, _folder: string, folderPath: string): Competition {
   const certImage = getFirstImageIn(path.join(folderPath, 'media', 'certificates'));
+  const allPhotos = getAllImagesIn(path.join(folderPath, 'media', 'photos'));
+  
   return {
     ...base,
     award: str(metadata.award),
@@ -182,6 +194,7 @@ function transformCompetition(base: BaseItem, metadata: Record<string, unknown>,
     competitionName: str(metadata.competition) || base.title,
     scope: (metadata.scope as Competition['scope']) || 'university',
     certificateImage: certImage,
+    images: allPhotos,
     artifacts: [], // Artifacts are moved to Projects
   };
 }

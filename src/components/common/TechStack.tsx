@@ -11,13 +11,13 @@ export function TechStack({ technologies, limit }: TechStackProps) {
       {displayTech.map((tech, index) => (
         <span
           key={index}
-          className="inline-block px-2 py-1 text-xs font-mono border border-gray-300"
+          className="inline-block px-3 py-1.5 text-[10px] font-mono border border-black dark:border-white uppercase tracking-widest dark:text-white"
         >
           {tech}
         </span>
       ))}
       {limit && technologies.length > limit && (
-        <span className="inline-block px-2 py-1 text-xs font-mono text-gray-500">
+        <span className="inline-block px-3 py-1.5 text-[10px] font-mono text-gray-400 uppercase tracking-widest">
           +{technologies.length - limit}
         </span>
       )}

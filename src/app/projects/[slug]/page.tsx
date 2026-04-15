@@ -11,6 +11,7 @@ import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/Badge';
 import { TechStack } from '@/components/common/TechStack';
 import { ArtifactSection } from '@/components/portfolio/ArtifactSection';
+import { Markdown } from '@/components/common/Markdown';
 import type { Project, Competition } from '@/types/portfolio.types';
 
 export default function ProjectDetailPage() {
@@ -39,10 +40,10 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="container-custom section-spacing">
-          <div className="animate-pulse space-y-8 max-w-4xl">
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="container-custom section-spacing min-h-[60vh] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-2 border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin" />
+            <p className="font-mono text-xs animate-pulse uppercase tracking-widest">Loading Case Study...</p>
           </div>
         </div>
       </Layout>
@@ -100,24 +101,22 @@ export default function ProjectDetailPage() {
                 </div>
               )}
 
-              <div className="prose dark:prose-invert max-w-none">
-                <h2 className="text-2xl font-bold mb-6 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
+              <div className="mb-16">
+                <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
                    Case Study
                 </h2>
-                <div className="space-y-6 text-lg leading-relaxed text-gray-800 dark:text-gray-300">
-                  {project.longDescription.split('\n\n').map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
-                </div>
+                <Markdown content={project.longDescription} />
               </div>
 
               {/* Artifacts Section */}
-              <div className="mt-16">
-                 <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
-                   Technical Artifacts
-                </h2>
-                <ArtifactSection artifacts={project.artifacts} />
-              </div>
+              {project.artifacts && project.artifacts.length > 0 && (
+                <div className="mt-16">
+                   <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
+                     Technical Artifacts
+                  </h2>
+                  <ArtifactSection artifacts={project.artifacts} />
+                </div>
+              )}
             </div>
 
             <div className="lg:col-span-4">
@@ -145,7 +144,7 @@ export default function ProjectDetailPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4">Tech Stack</h3>
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-6">Tech Stack</h3>
                   <TechStack technologies={project.technologies} />
                 </div>
 

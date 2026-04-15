@@ -47,6 +47,7 @@ export interface Competition extends BaseItem {
   competitionName: string;
   scope?: 'national' | 'university' | 'international';
   certificateImage?: string;
+  images?: string[];
   relatedProjects?: string[];
 }
 
