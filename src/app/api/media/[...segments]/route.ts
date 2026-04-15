@@ -19,13 +19,15 @@ const MIME_TYPES: Record<string, string> = {
   '.mp4': 'video/mp4',
   '.mov': 'video/quicktime',
   '.webm': 'video/webm',
+  '.ppt': 'application/vnd.ms-powerpoint',
+  '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 };
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: { segments: string[] } }
 ) {
-  // Decode URL-encoded segments
+  // Decode URL-encoded segments to handle spaces and special characters
   const decodedSegments = params.segments.map(s => decodeURIComponent(s));
   const filePath = path.join(PORTFOLIO_ROOT, ...decodedSegments);
 
@@ -36,7 +38,10 @@ export async function GET(
   }
 
   if (!fs.existsSync(normalizedPath)) {
-    return new NextResponse('Not Found', { status: 404 });
+    return new NextResponse('Not Found', { 
+      status: 404,
+      headers: { 'X-Debug-Path': normalizedPath }
+    });
   }
 
   const stat = fs.statSync(normalizedPath);

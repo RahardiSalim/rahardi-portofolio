@@ -3,8 +3,30 @@
 import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/Badge';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import type { Activity, Certification } from '@/types/portfolio.types';
 
 export default function AboutPage() {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/portfolio');
+        const data = await response.json();
+        setActivities(data.activities || []);
+        setCertifications(data.certifications || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <Layout>
       <section className="container-custom section-spacing">
@@ -100,6 +122,49 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
+
+            {/* Activities Section */}
+            {!loading && activities.length > 0 && (
+              <div className="mt-16">
+                <h2 className="text-2xl font-light mb-8 border-b border-black dark:border-gray-700 pb-4 dark:text-white">
+                  Activities & Leadership
+                </h2>
+                <div className="space-y-6">
+                  {activities.map((activity) => (
+                    <div key={activity.id} className="border border-black dark:border-gray-700 p-6">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-xl font-light dark:text-white">{activity.role}</h3>
+                        <span className="text-xs font-mono text-gray-500">{activity.date}</span>
+                      </div>
+                      <p className="text-sm font-mono text-gray-600 dark:text-gray-400 mb-4">{activity.organization}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">{activity.shortDescription}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Certifications Section */}
+            {!loading && certifications.length > 0 && (
+              <div className="mt-16">
+                <h2 className="text-2xl font-light mb-8 border-b border-black dark:border-gray-700 pb-4 dark:text-white">
+                  Certifications
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {certifications.map((cert) => (
+                    <div key={cert.id} className="border border-black dark:border-gray-700 p-6 flex items-start gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-light dark:text-white leading-tight mb-1">{cert.title}</h3>
+                        <p className="text-xs font-mono text-gray-500 mb-2">{cert.issuer} • {cert.date}</p>
+                        {cert.credentialId && (
+                          <p className="text-[10px] font-mono text-gray-400">ID: {cert.credentialId}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Contact */}
             <div className="mt-16">

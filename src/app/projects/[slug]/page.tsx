@@ -89,7 +89,7 @@ export default function ProjectDetailPage() {
               </h1>
 
               {project.previewImage && (
-                <div className="relative w-full aspect-video mb-12 overflow-hidden border-2 border-black dark:border-white">
+                <div className="relative w-full aspect-video mb-12 overflow-hidden border border-black dark:border-white">
                   <Image
                     src={project.previewImage}
                     alt={project.title}
@@ -102,7 +102,7 @@ export default function ProjectDetailPage() {
 
               <div className="prose dark:prose-invert max-w-none">
                 <h2 className="text-2xl font-bold mb-6 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
-                   Technical Case Study
+                   Case Study
                 </h2>
                 <div className="space-y-6 text-lg leading-relaxed text-gray-800 dark:text-gray-300">
                   {project.longDescription.split('\n\n').map((paragraph, i) => (
@@ -111,10 +111,10 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
 
-              {/* Artifacts Section - High Priority for Projects */}
+              {/* Artifacts Section */}
               <div className="mt-16">
                  <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
-                   Project Artifacts
+                   Technical Artifacts
                 </h2>
                 <ArtifactSection artifacts={project.artifacts} />
               </div>
@@ -153,12 +153,12 @@ export default function ProjectDetailPage() {
                   <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-6">Links & Resources</h3>
                   <div className="flex flex-col gap-3">
                     {project.links?.github && (
-                      <a href={project.links.github} target="_blank" className="flex justify-between items-center p-4 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-sm font-mono">
+                      <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="flex justify-between items-center p-4 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-sm font-mono">
                         GITHUB REPOSITORY <span>↗</span>
                       </a>
                     )}
                     {project.links?.demo && (
-                      <a href={project.links.demo} target="_blank" className="flex justify-between items-center p-4 bg-black text-white dark:bg-white dark:text-black hover:opacity-80 transition-all text-sm font-mono">
+                      <a href={project.links.demo} target="_blank" rel="noopener noreferrer" className="flex justify-between items-center p-4 bg-black text-white dark:bg-white dark:text-black hover:opacity-80 transition-all text-sm font-mono">
                         LIVE DEMO <span>↗</span>
                       </a>
                     )}

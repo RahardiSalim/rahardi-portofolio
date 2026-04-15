@@ -125,10 +125,13 @@ function createBaseItem(
   parsed: ParsedMarkdown
 ): BaseItem {
   const { metadata, shortDescription, longDescription } = parsed;
+  // Remove leading number from slug if present (e.g., "10.name" -> "name")
+  const cleanSlug = folder.replace(/^\d+\./, '');
+  
   return {
     id: folder,
     title,
-    slug: folderToSlug(folder),
+    slug: folderToSlug(cleanSlug),
     shortDescription,
     longDescription,
     date: str(metadata.date),
@@ -179,7 +182,7 @@ function transformCompetition(base: BaseItem, metadata: Record<string, unknown>,
     competitionName: str(metadata.competition) || base.title,
     scope: (metadata.scope as Competition['scope']) || 'university',
     certificateImage: certImage,
-    artifacts: [], 
+    artifacts: [], // Artifacts are moved to Projects
   };
 }
 
@@ -196,7 +199,15 @@ async function loadItems<T>(
   if (!fs.existsSync(basePath)) return [];
   
   const folders = getFolderNames(basePath);
-  for (const folder of folders) {
+  
+  // Sort folders numerically (reverse) based on leading number
+  const sortedFolders = folders.sort((a, b) => {
+    const numA = parseInt(a.split('.')[0]) || 0;
+    const numB = parseInt(b.split('.')[0]) || 0;
+    return numB - numA;
+  });
+
+  for (const folder of sortedFolders) {
     const folderPath = path.join(basePath, folder);
     const content = readDescriptionFile(folderPath);
     if (!content) continue;
@@ -216,29 +227,48 @@ export async function loadPortfolioData(): Promise<PortfolioData> {
     loadItems('experiences', transformExperience),
     loadItems('projects', transformProject),
     loadItems('competitions', transformCompetition),
-    loadItems('activities', (base, meta) => ({ ...base, organization: str(meta.organization), role: str(meta.role) } as Activity)),
-    loadItems('certifications', (base, meta) => ({ ...base, issuer: str(meta.issuer), credentialId: str(meta.credentialid) } as Certification)),
+    loadItems('activities', (base, meta) => ({ 
+      ...base, 
+      organization: str(meta.organization), 
+      role: str(meta.role) 
+    } as Activity)),
+    loadItems('certifications', (base, meta) => ({ 
+      ...base, 
+      issuer: str(meta.issuer), 
+      credentialId: str(meta.credentialid) 
+    } as Certification)),
   ]);
 
-  const mappings: Record<string, string> = {
-    'kubuku-rag-credit-scoring':        'gdg-jakarta-hackathon-2025-bronze',
-    'poverty-prediction-geospatial-ml': 'gemastik-2025-data-mining-silver',
-    'refchecker-gammafest2025':         'gammafest-2025-citation-system-gold',
-  };
+  // Enhanced Dynamic Mapping Logic
+  // Match competitions to projects by checking if the slug of the project is contained in the competition's folder name or slug
+  for (const comp of competitions) {
+    const compSlug = comp.slug;
+    const compId = comp.id;
+    
+    // Try to find a project that relates to this competition
+    const relatedProject = projects.find(proj => {
+      const projSlug = proj.slug;
+      // Heuristic: if project slug is part of competition slug or vice versa
+      return compSlug.includes(projSlug) || projSlug.includes(compSlug);
+    });
 
-  for (const [projectId, competitionId] of Object.entries(mappings)) {
-    const project = projects.find(p => p.id === projectId);
-    const competition = competitions.find(c => c.id === competitionId);
-    if (project && competition) {
-      project.relatedCompetitions = [competitionId];
-      competition.relatedProjects = [projectId];
+    if (relatedProject) {
+      if (!relatedProject.relatedCompetitions) relatedProject.relatedCompetitions = [];
+      if (!relatedProject.relatedCompetitions.includes(compId)) {
+        relatedProject.relatedCompetitions.push(compId);
+      }
+      
+      if (!comp.relatedProjects) comp.relatedProjects = [];
+      if (!comp.relatedProjects.includes(relatedProject.id)) {
+        comp.relatedProjects.push(relatedProject.id);
+      }
     }
   }
 
   return { 
-    experiences: experiences.sort((a, b) => b.date.localeCompare(a.date)),
-    projects: projects.sort((a, b) => b.date.localeCompare(a.date)),
-    competitions: competitions.sort((a, b) => b.date.localeCompare(a.date)),
+    experiences,
+    projects,
+    competitions,
     activities,
     certifications
   };

@@ -16,7 +16,7 @@ export const CONTENT_TYPES: Record<string, ContentTypeConfig> = {
     label: 'Projects',
   },
   competitions: {
-    directory: '03-competitions',
+    directory: '03-competitions-and-awards',
     order: 3,
     label: 'Competitions & Awards',
   },
