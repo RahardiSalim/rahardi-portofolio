@@ -10,6 +10,16 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        '.git/**',
+        '.next/cache/**',
+        'node_modules/@swc/**',
+        'node_modules/webpack/**',
+      ],
+    },
+  },
 }
 
 module.exports = nextConfig

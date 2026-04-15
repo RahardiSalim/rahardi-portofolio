@@ -1,0 +1,5 @@
+# Git history — never needed in deployment
+.git
+
+# Development/build caches
+.next/cache
