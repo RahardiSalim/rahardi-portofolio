@@ -11,11 +11,12 @@ import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/Badge';
 import { TechStack } from '@/components/common/TechStack';
 import { ArtifactSection } from '@/components/portfolio/ArtifactSection';
-import type { Project } from '@/types/portfolio.types';
+import type { Project, Competition } from '@/types/portfolio.types';
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<Project | null>(null);
+  const [allCompetitions, setAllCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,10 +25,17 @@ export default function ProjectDetailPage() {
       .then(data => {
         const found = data.projects.find((p: Project) => p.slug === slug);
         setProject(found || null);
+        setAllCompetitions(data.competitions || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [slug]);
+
+  // Helper function to get competition slug from ID
+  const getCompetitionSlug = (competitionId: string) => {
+    const competition = allCompetitions.find((c) => c.id === competitionId);
+    return competition?.slug || competitionId;
+  };
 
   if (loading) {
     return (
@@ -186,7 +194,7 @@ export default function ProjectDetailPage() {
                 )}
                 {project.relatedCompetitions && project.relatedCompetitions.length > 0 && (
                   <Link
-                    href={`/competitions/${project.relatedCompetitions[0]}`}
+                    href={`/competitions/${getCompetitionSlug(project.relatedCompetitions[0])}`}
                     className="inline-flex items-center gap-2 border border-black dark:border-gray-600 px-4 py-2 text-sm font-mono hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                   >
                     Competition Entry →

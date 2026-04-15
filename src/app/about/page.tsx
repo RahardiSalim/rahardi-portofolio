@@ -38,13 +38,13 @@ export default function AboutPage() {
 
             {/* Technical Skills */}
             <div className="mt-16">
-              <h2 className="text-2xl font-light mb-8 border-b border-black pb-4">
+              <h2 className="text-2xl font-light mb-8 border-b border-black dark:border-gray-700 pb-4 dark:text-white">
                 Technical Skills
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4">Core</h3>
+                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4 dark:text-white">Core</h3>
                   <div className="flex flex-wrap gap-2">
                     {['Machine Learning', 'Deep Learning', 'NLP', 'Computer Vision', 'Data Engineering'].map(skill => (
                       <Badge key={skill} variant="outline">{skill}</Badge>
@@ -53,7 +53,7 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4">Technologies</h3>
+                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4 dark:text-white">Technologies</h3>
                   <div className="flex flex-wrap gap-2">
                     {['Python', 'PyTorch', 'TensorFlow', 'React', 'PostgreSQL', 'AWS'].map(skill => (
                       <Badge key={skill} variant="outline">{skill}</Badge>
@@ -62,7 +62,7 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4">Specializations</h3>
+                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4 dark:text-white">Specializations</h3>
                   <div className="flex flex-wrap gap-2">
                     {['RAG Systems', 'Geospatial ML', 'Time Series', 'MLOps'].map(skill => (
                       <Badge key={skill} variant="outline">{skill}</Badge>
@@ -71,7 +71,7 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4">Languages</h3>
+                  <h3 className="text-sm uppercase tracking-widest font-mono mb-4 dark:text-white">Languages</h3>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">Indonesian (Native)</Badge>
                     <Badge variant="outline">English (Proficient)</Badge>
@@ -82,19 +82,19 @@ export default function AboutPage() {
 
             {/* Education */}
             <div className="mt-16">
-              <h2 className="text-2xl font-light mb-8 border-b border-black pb-4">
+              <h2 className="text-2xl font-light mb-8 border-b border-black dark:border-gray-700 pb-4 dark:text-white">
                 Education
               </h2>
               
-              <div className="border border-black p-8">
-                <h3 className="text-xl font-light mb-2">University of Indonesia</h3>
-                <p className="text-sm font-mono text-gray-600 mb-4">
+              <div className="border border-black dark:border-gray-700 p-8 dark:bg-gray-800">
+                <h3 className="text-xl font-light mb-2 dark:text-white">University of Indonesia</h3>
+                <p className="text-sm font-mono text-gray-600 dark:text-gray-400 mb-4">
                   Bachelor of Computer Science • Expected August 2027
                 </p>
-                <p className="text-sm mb-2">
+                <p className="text-sm mb-2 dark:text-gray-300">
                   <strong>GPA:</strong> 3.63/4.0
                 </p>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   <strong>Relevant Coursework:</strong> Artificial Intelligence & Data Science, 
                   Advanced Programming, Database Systems, Platform-Based Programming
                 </p>
@@ -103,13 +103,13 @@ export default function AboutPage() {
 
             {/* Contact */}
             <div className="mt-16">
-              <h2 className="text-2xl font-light mb-8 border-b border-black pb-4">
+              <h2 className="text-2xl font-light mb-8 border-b border-black dark:border-gray-700 pb-4 dark:text-white">
                 Get in Touch
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                 <div>
-                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600">Email</p>
+                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600 dark:text-gray-400">Email</p>
                   <p>
                     <a href="mailto:rahardisalim23@gmail.com" className="link-underline">
                       rahardisalim23@gmail.com
@@ -118,7 +118,7 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600">Phone</p>
+                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600 dark:text-gray-400">Phone</p>
                   <p>
                     <a href="tel:+6281364134638" className="link-underline">
                       +62 813-6413-4638
@@ -127,19 +127,19 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600">GitHub</p>
+                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600 dark:text-gray-400">GitHub</p>
                   <p>
-                    <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="link-underline">
-                      github.com/yourusername
+                    <a href="https://github.com/RahardiSalim" target="_blank" rel="noopener noreferrer" className="link-underline">
+                      github.com/RahardiSalim
                     </a>
                   </p>
                 </div>
 
                 <div>
-                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600">LinkedIn</p>
+                  <p className="font-mono uppercase tracking-widest mb-2 text-xs text-gray-600 dark:text-gray-400">LinkedIn</p>
                   <p>
-                    <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" className="link-underline">
-                      linkedin.com/in/yourusername
+                    <a href="https://www.linkedin.com/in/rahardi-salim" target="_blank" rel="noopener noreferrer" className="link-underline">
+                      linkedin.com/in/rahardi-salim
                     </a>
                   </p>
                 </div>

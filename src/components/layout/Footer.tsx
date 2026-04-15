@@ -16,7 +16,7 @@ export function Footer() {
               </p>
               <p>
                 <a href="tel:+6281364134638" className="link-underline dark:text-gray-300">
-                  +62 813-6413-4638
+                  +62 813 6413 4638
                 </a>
               </p>
               <p className="text-gray-600 dark:text-gray-400">Jakarta, Indonesia</p>
@@ -29,7 +29,7 @@ export function Footer() {
             <div className="space-y-2 text-sm">
               <p>
                 <a
-                  href="https://github.com/yourusername"
+                  href="https://github.com/RahardiSalim"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link-underline dark:text-gray-300"
@@ -39,7 +39,7 @@ export function Footer() {
               </p>
               <p>
                 <a
-                  href="https://linkedin.com/in/yourusername"
+                  href="https://www.linkedin.com/in/rahardi-salim"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link-underline dark:text-gray-300"

@@ -11,11 +11,12 @@ import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/Badge';
 import { TechStack } from '@/components/common/TechStack';
 import { ArtifactSection } from '@/components/portfolio/ArtifactSection';
-import type { Competition } from '@/types/portfolio.types';
+import type { Competition, Project } from '@/types/portfolio.types';
 
 export default function CompetitionDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [competition, setCompetition] = useState<Competition | null>(null);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [photos, setPhotos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,6 +26,7 @@ export default function CompetitionDetailPage() {
       .then(data => {
         const found = data.competitions.find((c: Competition) => c.slug === slug);
         setCompetition(found || null);
+        setAllProjects(data.projects || []);
         // Collect all photos if preview is available
         if (found?.previewImage) {
           setPhotos([found.previewImage]);
@@ -33,6 +35,12 @@ export default function CompetitionDetailPage() {
       })
       .catch(() => setLoading(false));
   }, [slug]);
+
+  // Helper function to get project slug from ID
+  const getProjectSlug = (projectId: string) => {
+    const project = allProjects.find((p) => p.id === projectId);
+    return project?.slug || projectId;
+  };
 
   if (loading) {
     return (
@@ -182,7 +190,7 @@ export default function CompetitionDetailPage() {
                 )}
                 {competition.relatedProjects && competition.relatedProjects.length > 0 && (
                   <Link
-                    href={`/projects/${competition.relatedProjects[0]}`}
+                    href={`/projects/${getProjectSlug(competition.relatedProjects[0])}`}
                     className="inline-flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-sm font-mono hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                   >
                     View Project →
