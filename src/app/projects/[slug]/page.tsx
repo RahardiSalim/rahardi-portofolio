@@ -31,7 +31,6 @@ export default function ProjectDetailPage() {
       .catch(() => setLoading(false));
   }, [slug]);
 
-  // Helper function to get competition slug from ID
   const getCompetitionSlug = (competitionId: string) => {
     const competition = allCompetitions.find((c) => c.id === competitionId);
     return competition?.slug || competitionId;
@@ -44,11 +43,6 @@ export default function ProjectDetailPage() {
           <div className="animate-pulse space-y-8 max-w-4xl">
             <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
             <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-              ))}
-            </div>
           </div>
         </div>
       </Layout>
@@ -70,136 +64,111 @@ export default function ProjectDetailPage() {
 
   return (
     <Layout>
-      <article className="container-custom section-spacing">
+      <article className="container-custom section-spacing pt-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+          transition={{ duration: 0.5 }}
         >
-          {/* Back link */}
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-sm font-mono text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-sm font-mono text-gray-500 hover:text-black dark:hover:text-white transition-colors mb-12 group"
           >
-            ← Projects
+            <span className="group-hover:-translate-x-1 transition-transform">←</span> ALL PROJECTS
           </Link>
 
-          <div className="max-w-4xl">
-            {/* Type + award badge */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="outline">{project.type.toUpperCase()}</Badge>
-              {project.award && <Badge>{project.award}</Badge>}
-            </div>
-
-            <h1 className="heading-lg mb-4 dark:text-white">{project.title}</h1>
-
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mb-8 font-mono">
-              {project.date && <span>{project.date}</span>}
-              {project.role && <span>· {project.role}</span>}
-              {project.teamSize && <span>· Team: {project.teamSize}</span>}
-            </div>
-
-            {/* Preview image */}
-            {project.previewImage ? (
-              <div className="relative w-full h-72 md:h-96 mb-8 overflow-hidden border border-black dark:border-gray-700">
-                <Image
-                  src={project.previewImage}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <div className="lg:col-span-8">
+              <div className="flex flex-wrap gap-3 mb-6">
+                <Badge variant="outline">{project.type.toUpperCase()}</Badge>
+                {project.award && <Badge>{project.award}</Badge>}
               </div>
-            ) : (
-              <div className="w-full h-48 mb-8 bg-gray-100 dark:bg-gray-800 border border-black dark:border-gray-700 flex items-center justify-center">
-                <span className="text-gray-400 dark:text-gray-500 text-sm font-mono">
-                  No photos yet — add images to media/photos/
-                </span>
-              </div>
-            )}
 
-            {/* Short description */}
-            <p className="body-lg text-gray-800 dark:text-gray-300 mb-8">
-              {project.shortDescription}
-            </p>
+              <h1 className="text-4xl md:text-6xl font-black mb-8 dark:text-white tracking-tighter uppercase leading-tight">
+                {project.title}
+              </h1>
 
-            {/* Technologies */}
-            {project.technologies.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-sm uppercase tracking-widest font-mono mb-3 dark:text-white">Technologies</h2>
-                <TechStack technologies={project.technologies} />
-              </div>
-            )}
+              {project.previewImage && (
+                <div className="relative w-full aspect-video mb-12 overflow-hidden border-2 border-black dark:border-white">
+                  <Image
+                    src={project.previewImage}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
 
-            {/* Artifacts: notebooks, slides, proposals */}
-            <ArtifactSection artifacts={project.artifacts} />
-
-            {/* Long description */}
-            {project.longDescription && (
-              <div className="mb-12 border-t border-gray-200 dark:border-gray-700 pt-8">
-                <h2 className="text-xl font-light mb-6 dark:text-white">About This Project</h2>
-                <div className="space-y-4">
+              <div className="prose dark:prose-invert max-w-none">
+                <h2 className="text-2xl font-bold mb-6 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
+                   Technical Case Study
+                </h2>
+                <div className="space-y-6 text-lg leading-relaxed text-gray-800 dark:text-gray-300">
                   {project.longDescription.split('\n\n').map((paragraph, i) => (
-                    <p key={i} className="text-gray-800 dark:text-gray-300 leading-relaxed">
-                      {paragraph}
-                    </p>
+                    <p key={i}>{paragraph}</p>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* Links */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
-              <h2 className="text-sm uppercase tracking-widest font-mono mb-4 dark:text-white">Links</h2>
-              <div className="flex flex-wrap gap-3">
-                {project.links?.github && (
-                  <a
-                    href={project.links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-black dark:border-gray-600 px-4 py-2 text-sm font-mono hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
-                  >
-                    GitHub →
-                  </a>
-                )}
-                {project.links?.demo && (
-                  <a
-                    href={project.links.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-sm font-mono hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-                  >
-                    Live Demo →
-                  </a>
-                )}
-                {project.links?.paper && (
-                  <a
-                    href={project.links.paper}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-black dark:border-gray-600 px-4 py-2 text-sm font-mono hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
-                  >
-                    Paper →
-                  </a>
-                )}
-                {project.links?.presentation && (
-                  <a
-                    href={project.links.presentation}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-black dark:border-gray-600 px-4 py-2 text-sm font-mono hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
-                  >
-                    Slides →
-                  </a>
-                )}
-                {project.relatedCompetitions && project.relatedCompetitions.length > 0 && (
-                  <Link
-                    href={`/competitions/${getCompetitionSlug(project.relatedCompetitions[0])}`}
-                    className="inline-flex items-center gap-2 border border-black dark:border-gray-600 px-4 py-2 text-sm font-mono hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
-                  >
-                    Competition Entry →
-                  </Link>
-                )}
+              {/* Artifacts Section - High Priority for Projects */}
+              <div className="mt-16">
+                 <h2 className="text-2xl font-bold mb-8 font-mono uppercase tracking-widest border-b border-black dark:border-white pb-2 inline-block">
+                   Project Artifacts
+                </h2>
+                <ArtifactSection artifacts={project.artifacts} />
+              </div>
+            </div>
+
+            <div className="lg:col-span-4">
+              <div className="sticky top-32 space-y-12">
+                <div>
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4">Metadata</h3>
+                  <dl className="space-y-4">
+                    <div>
+                      <dt className="text-[10px] font-mono uppercase text-gray-400">Date</dt>
+                      <dd className="text-sm font-bold dark:text-white">{project.date}</dd>
+                    </div>
+                    {project.role && (
+                      <div>
+                        <dt className="text-[10px] font-mono uppercase text-gray-400">Role</dt>
+                        <dd className="text-sm font-bold dark:text-white">{project.role}</dd>
+                      </div>
+                    )}
+                    {project.teamSize && (
+                      <div>
+                        <dt className="text-[10px] font-mono uppercase text-gray-400">Team Size</dt>
+                        <dd className="text-sm font-bold dark:text-white">{project.teamSize}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4">Tech Stack</h3>
+                  <TechStack technologies={project.technologies} />
+                </div>
+
+                <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-6">Links & Resources</h3>
+                  <div className="flex flex-col gap-3">
+                    {project.links?.github && (
+                      <a href={project.links.github} target="_blank" className="flex justify-between items-center p-4 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-sm font-mono">
+                        GITHUB REPOSITORY <span>↗</span>
+                      </a>
+                    )}
+                    {project.links?.demo && (
+                      <a href={project.links.demo} target="_blank" className="flex justify-between items-center p-4 bg-black text-white dark:bg-white dark:text-black hover:opacity-80 transition-all text-sm font-mono">
+                        LIVE DEMO <span>↗</span>
+                      </a>
+                    )}
+                    {project.relatedCompetitions?.[0] && (
+                       <Link href={`/competitions/${getCompetitionSlug(project.relatedCompetitions[0])}`} className="flex justify-between items-center p-4 border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all text-sm font-mono">
+                        VIEW COMPETITION STORY <span>→</span>
+                      </Link>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

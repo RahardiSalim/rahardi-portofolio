@@ -38,11 +38,12 @@ interface CardHeaderProps {
   title: string;
   subtitle?: string;
   badge?: string;
+  className?: string;
 }
 
-export function CardHeader({ title, subtitle, badge }: CardHeaderProps) {
+export function CardHeader({ title, subtitle, badge, className = '' }: CardHeaderProps) {
   return (
-    <div className="mb-4">
+    <div className={`mb-4 ${className}`}>
       {badge && (
         <span className="inline-block text-xs uppercase tracking-widest mb-2 text-gray-600 dark:text-gray-400">
           {badge}
@@ -58,11 +59,12 @@ export function CardHeader({ title, subtitle, badge }: CardHeaderProps) {
 
 interface CardBodyProps {
   children: ReactNode;
+  className?: string;
 }
 
-export function CardBody({ children }: CardBodyProps) {
+export function CardBody({ children, className = '' }: CardBodyProps) {
   return (
-    <div className="body-md text-gray-800 dark:text-gray-300">
+    <div className={`body-md text-gray-800 dark:text-gray-300 ${className}`}>
       {children}
     </div>
   );
@@ -70,11 +72,12 @@ export function CardBody({ children }: CardBodyProps) {
 
 interface CardFooterProps {
   children: ReactNode;
+  className?: string;
 }
 
-export function CardFooter({ children }: CardFooterProps) {
+export function CardFooter({ children, className = '' }: CardFooterProps) {
   return (
-    <div className="mt-6 flex items-center gap-4 text-sm">
+    <div className={`mt-6 flex items-center gap-4 text-sm ${className}`}>
       {children}
     </div>
   );

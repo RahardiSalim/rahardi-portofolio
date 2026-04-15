@@ -16,6 +16,9 @@ const MIME_TYPES: Record<string, string> = {
   '.svg': 'image/svg+xml',
   '.pdf': 'application/pdf',
   '.ipynb': 'application/json',
+  '.mp4': 'video/mp4',
+  '.mov': 'video/quicktime',
+  '.webm': 'video/webm',
 };
 
 export async function GET(

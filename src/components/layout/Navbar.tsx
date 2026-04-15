@@ -23,13 +23,13 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-black dark:border-gray-700 transition-colors"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-black dark:border-gray-700 transition-colors"
     >
       <div className="container-custom">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-20 md:h-24">
           {/* Logo */}
-          <Link href="/" className="text-xl md:text-2xl font-light tracking-tight dark:text-white">
-            Rahardi Salim
+          <Link href="/" className="text-2xl md:text-3xl font-black tracking-tighter dark:text-white uppercase">
+            RS<span className="text-blue-600">.</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -41,11 +41,12 @@ export function Navbar() {
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className={`text-sm md:text-base font-mono uppercase tracking-wider transition-colors ${
-                        isActive ? 'text-black dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white'
+                      className={`text-xs md:text-sm font-mono uppercase tracking-widest transition-all relative group ${
+                        isActive ? 'text-black dark:text-white font-bold' : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white'
                       }`}
                     >
                       {item.name}
+                      <span className={`absolute -bottom-1 left-0 h-[2px] bg-blue-600 transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                     </Link>
                   </li>
                 );
