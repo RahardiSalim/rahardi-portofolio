@@ -245,11 +245,23 @@ export async function loadPortfolioData(): Promise<PortfolioData> {
       organization: str(meta.organization), 
       role: str(meta.role) 
     } as Activity)),
-    loadItems('certifications', (base, meta) => ({ 
-      ...base, 
-      issuer: str(meta.issuer), 
-      credentialId: str(meta.credentialid) 
-    } as Certification)),
+    loadItems('certifications', (base, meta, _folder, folderPath) => {
+      // Find a certificate PDF in media/certificates/ and expose it as a link
+      const certsDir = path.join(folderPath, 'media', 'certificates');
+      let certificateUrl: string | undefined;
+      if (fs.existsSync(certsDir)) {
+        const pdf = fs.readdirSync(certsDir).find(f => path.extname(f).toLowerCase() === '.pdf');
+        if (pdf) certificateUrl = toApiUrl(path.join(certsDir, pdf));
+      }
+      return {
+        ...base,
+        issuer: str(meta.issuer),
+        credentialId: str(meta.credentialid),
+        links: { ...base.links, ...(certificateUrl ? { certificate: certificateUrl } : {}) },
+        // Use logoImage as previewImage fallback since certs don't have a photos/ dir
+        previewImage: base.previewImage || base.logoImage,
+      } as Certification;
+    }),
   ]);
 
   // Enhanced Dynamic Mapping Logic

@@ -39,19 +39,6 @@ export function CareerTimeline() {
 
   return (
     <div className="relative max-w-4xl mx-auto">
-      {/* CV Download Button */}
-      <div className="flex justify-center mb-16">
-        <a
-          href="/assets/RahardiSalim_Resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-mono text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300"
-        >
-          <span>Download Full CV</span>
-          <span className="text-lg group-hover:translate-y-0.5 transition-transform">↓</span>
-        </a>
-      </div>
-
       {/* Timeline line */}
       <div className="absolute left-1/2 top-32 bottom-0 w-px bg-gray-200 dark:bg-gray-800 -translate-x-1/2 hidden md:block" />
 

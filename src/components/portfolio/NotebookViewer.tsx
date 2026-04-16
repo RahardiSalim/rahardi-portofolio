@@ -5,15 +5,15 @@ import { Markdown } from '@/components/common/Markdown';
 
 interface NotebookCell {
   cell_type: 'code' | 'markdown' | 'raw';
-  source: string[];
+  source: string | string[];
   outputs?: NotebookOutput[];
   execution_count?: number | null;
 }
 
 interface NotebookOutput {
   output_type: string;
-  text?: string[];
-  data?: { 'text/plain'?: string[]; 'image/png'?: string };
+  text?: string | string[];
+  data?: { 'text/plain'?: string | string[]; 'image/png'?: string };
 }
 
 interface NotebookData {
@@ -65,8 +65,13 @@ export function NotebookViewer({ url, name }: NotebookViewerProps) {
   );
 }
 
+function toText(value: string | string[] | undefined): string {
+  if (!value) return '';
+  return Array.isArray(value) ? value.join('') : value;
+}
+
 function CellRenderer({ cell }: { cell: NotebookCell }) {
-  const source = cell.source.join('');
+  const source = toText(cell.source);
 
   if (cell.cell_type === 'markdown') {
     return (
@@ -116,7 +121,7 @@ function CellOutput({ output }: { output: NotebookOutput }) {
       </div>
     );
   }
-  const text = output.text?.join('') ?? output.data?.['text/plain']?.join('') ?? '';
+  const text = toText(output.text) || toText(output.data?.['text/plain']) || '';
   if (!text) return null;
   return (
     <pre className="text-[11px] text-gray-500 dark:text-gray-400 whitespace-pre-wrap overflow-x-auto font-mono py-1">

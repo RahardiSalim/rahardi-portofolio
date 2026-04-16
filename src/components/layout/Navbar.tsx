@@ -11,6 +11,8 @@ const navigation = [
   { name: 'Work', href: '/experience' },
   { name: 'Projects', href: '/projects' },
   { name: 'Awards', href: '/competitions' },
+  { name: 'Activities', href: '/activities' },
+  { name: 'Certs', href: '/certifications' },
   { name: 'About', href: '/about' },
 ];
 
