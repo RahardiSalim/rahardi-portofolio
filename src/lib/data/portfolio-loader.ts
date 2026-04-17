@@ -11,7 +11,7 @@ import type {
   ArtifactFile,
   ParsedMarkdown,
   BaseItem,
-} from '@/types/portfolio.types';
+} from '@/types';
 import {
   parseMarkdown,
   readDescriptionFile,
@@ -214,11 +214,8 @@ async function loadItems<T>(
   const folders = getFolderNames(basePath);
   
   // Sort folders numerically (reverse) based on leading number
-  const sortedFolders = folders.sort((a, b) => {
-    const numA = parseInt(a.split('.')[0]) || 0;
-    const numB = parseInt(b.split('.')[0]) || 0;
-    return numB - numA;
-  });
+  // Sort alphabetically; date-based ordering is handled by frontmatter
+  const sortedFolders = folders.sort((a, b) => a.localeCompare(b));
 
   for (const folder of sortedFolders) {
     const folderPath = path.join(basePath, folder);

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import type { ParsedMarkdown } from '@/types/portfolio.types';
+import type { ParsedMarkdown } from '@/types';
 
 /**
  * Parse markdown content and extract metadata, short description, and long description
@@ -93,13 +93,16 @@ function parseMetadataSection(text: string, metadata: Record<string, unknown>) {
  * Read a description.md file from a folder
  */
 export function readDescriptionFile(folderPath: string): string | null {
-  const descPath = path.join(folderPath, 'description.md');
-  
-  if (!fs.existsSync(descPath)) {
-    return null;
+  const indexPath = path.join(folderPath, 'index.md');
+  if (fs.existsSync(indexPath)) {
+    return fs.readFileSync(indexPath, 'utf-8');
   }
-  
-  return fs.readFileSync(descPath, 'utf-8');
+  // Fallback for legacy description.md during migration
+  const legacyPath = path.join(folderPath, 'description.md');
+  if (fs.existsSync(legacyPath)) {
+    return fs.readFileSync(legacyPath, 'utf-8');
+  }
+  return null;
 }
 
 /**

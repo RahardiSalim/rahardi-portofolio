@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import { Poppins, JetBrains_Mono } from 'next/font/google';
 import '@/styles/globals.css';
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  SITE_AUTHOR,
+} from '@/lib/constants/metadata';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -16,13 +22,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Rahardi Salim - Data Science & AI Engineer',
-  description: 'Portfolio of Rahardi Salim, Data Science & AI Engineer specializing in machine learning, NLP, and computer vision.',
-  keywords: ['Data Science', 'Machine Learning', 'AI', 'NLP', 'Computer Vision', 'Portfolio'],
-  authors: [{ name: 'Rahardi Salim' }],
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
+  authors: [{ name: SITE_AUTHOR }],
   openGraph: {
-    title: 'Rahardi Salim - Data Science & AI Engineer',
-    description: 'Portfolio showcasing projects in machine learning, data science, and artificial intelligence.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     type: 'website',
   },
 };

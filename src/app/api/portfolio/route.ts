@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadPortfolioData } from '@/lib/data/portfolio-loader';
+import { loadPortfolioData } from '@/lib/data';
 
 export async function GET() {
   try {
