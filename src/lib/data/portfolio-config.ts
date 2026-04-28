@@ -25,9 +25,4 @@ export const CONTENT_TYPES: Record<string, ContentTypeConfig> = {
     order: 4,
     label: 'Activities',
   },
-  certifications: {
-    directory: 'content/certifications',
-    order: 5,
-    label: 'Certifications',
-  },
 };

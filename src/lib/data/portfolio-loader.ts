@@ -6,7 +6,6 @@ import type {
   Competition,
   Experience,
   Activity,
-  Certification,
   LinkCollection,
   ParsedMarkdown,
   BaseItem,
@@ -23,7 +22,6 @@ import {
   contentItemMediaPath,
   getAllImagesIn,
   getFirstImageIn,
-  getFirstPdfIn,
   getLogoImage,
   scanArtifacts,
 } from '@/lib/media';
@@ -51,6 +49,33 @@ function parseStatus(status: unknown): BaseItem['status'] {
 
 function parseLinks(links: unknown): LinkCollection {
   return (typeof links === 'object' && links !== null) ? links as LinkCollection : {};
+}
+
+function parseExperienceTitle(title: string): Pick<Experience, 'organization' | 'position'> {
+  const dashParts = title.split(' - ');
+  if (dashParts.length >= 2) {
+    return {
+      position: dashParts.slice(0, -1).join(' - ').trim(),
+      organization: dashParts[dashParts.length - 1].trim(),
+    };
+  }
+
+  const atMatch = title.match(/^(.+?)\s+at\s+(.+)$/i);
+  if (atMatch) {
+    return {
+      position: atMatch[1].trim(),
+      organization: atMatch[2].trim(),
+    };
+  }
+
+  return { position: title, organization: '' };
+}
+
+function getExperienceCategory(organization: string): Experience['category'] {
+  const org = organization.toLowerCase();
+  return org.includes('ristek') || org.includes('compfest')
+    ? 'organization'
+    : 'professional';
 }
 
 // ─── Base Item Loader ──────────────────────────────────────────────────────────
@@ -85,10 +110,15 @@ function createBaseItem(
 
 function transformExperience(base: BaseItem, metadata: Record<string, unknown>, folder: string): Experience {
   const year = folder.match(/(\d{4})$/)?.[1] || '2024';
+  const titleParts = parseExperienceTitle(base.title);
+  const organization = str(metadata.organization) || titleParts.organization;
+  const position = str(metadata.position) || titleParts.position;
+
   return {
     ...base,
-    organization: str(metadata.organization) || base.title.split(' - ').pop() || '',
-    position: str(metadata.position) || base.title.split(' - ').shift() || '',
+    category: getExperienceCategory(organization),
+    organization,
+    position,
     location: str(metadata.location, 'Indonesia'),
     startDate: str(metadata.startdate, year),
     endDate: str(metadata.enddate) || undefined,
@@ -160,7 +190,7 @@ async function loadItems<T>(
 }
 
 export async function loadPortfolioData(): Promise<PortfolioData> {
-  const [experiences, projects, competitions, activities, certifications] = await Promise.all([
+  const [experiences, projects, competitions, activities] = await Promise.all([
     loadItems('experiences', transformExperience),
     loadItems('projects', transformProject),
     loadItems('competitions', transformCompetition),
@@ -169,18 +199,6 @@ export async function loadPortfolioData(): Promise<PortfolioData> {
       organization: str(meta.organization), 
       role: str(meta.role) 
     } as Activity)),
-    loadItems('certifications', (base, meta, _folder, folderPath) => {
-      const certificateUrl = getFirstPdfIn(contentItemMediaPath(folderPath, 'certificates'));
-
-      return {
-        ...base,
-        issuer: str(meta.issuer),
-        credentialId: str(meta.credentialid),
-        links: { ...base.links, ...(certificateUrl ? { certificate: certificateUrl } : {}) },
-        // Use logoImage as previewImage fallback since certs don't have a photos/ dir
-        previewImage: base.previewImage || base.logoImage,
-      } as Certification;
-    }),
   ]);
 
   // Enhanced Dynamic Mapping Logic
@@ -213,7 +231,6 @@ export async function loadPortfolioData(): Promise<PortfolioData> {
     experiences,
     projects,
     competitions,
-    activities,
-    certifications
+    activities
   };
 }
