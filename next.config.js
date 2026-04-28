@@ -12,7 +12,7 @@ const nextConfig = {
   },
   experimental: {
     outputFileTracingIncludes: {
-      '/api/media/[...segments]': ['./content/**/*'],
+      '/api/media/**': ['./content/**/*'],
     },
     outputFileTracingExcludes: {
       '*': [
