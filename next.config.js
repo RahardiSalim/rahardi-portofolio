@@ -11,6 +11,9 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
+    outputFileTracingIncludes: {
+      '/api/media/[...segments]': ['./content/**/*'],
+    },
     outputFileTracingExcludes: {
       '*': [
         '.git/**',
