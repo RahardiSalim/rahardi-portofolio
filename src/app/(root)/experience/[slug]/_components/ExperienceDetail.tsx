@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import type { Experience } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Mdx } from '@/components/common/Mdx';
+import { MediaImage } from '@/components/common/MediaImage';
 import { formatDateRange } from '@/lib/utils';
 
 interface ExperienceDetailProps {
@@ -28,15 +29,29 @@ export function ExperienceDetail({ experience }: ExperienceDetailProps) {
         </Link>
 
         <header className="mb-12">
-          <p className="text-sm font-mono uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
-            {experience.organization}
-          </p>
-          <h1 className="text-4xl md:text-5xl font-black mb-6 dark:text-white tracking-tighter">
-            {experience.position}
-          </h1>
-          <div className="flex flex-wrap gap-3 items-center">
-            <Badge variant="outline">{formatDateRange(experience.startDate, experience.endDate)}</Badge>
-            {experience.location && <Badge variant="outline">{experience.location}</Badge>}
+          <div className="flex flex-col sm:flex-row sm:items-start gap-5">
+            {experience.logoImage && (
+              <MediaImage
+                src={experience.logoImage}
+                alt={experience.organization}
+                fit="contain"
+                className="w-16 h-16 flex-shrink-0 border border-black/10 dark:border-white/10 bg-white p-2"
+                sizes="64px"
+                priority
+              />
+            )}
+            <div className="min-w-0">
+              <p className="text-sm font-mono uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+                {experience.organization}
+              </p>
+              <h1 className="text-4xl md:text-5xl font-black mb-6 dark:text-white tracking-tighter">
+                {experience.position}
+              </h1>
+              <div className="flex flex-wrap gap-3 items-center">
+                <Badge variant="outline">{formatDateRange(experience.startDate, experience.endDate)}</Badge>
+                {experience.location && <Badge variant="outline">{experience.location}</Badge>}
+              </div>
+            </div>
           </div>
         </header>
 

@@ -6,6 +6,7 @@ import type { Activity } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Mdx } from '@/components/common/Mdx';
 import { ArtifactSection } from '@/components/common/ArtifactSection';
+import { MediaImage } from '@/components/common/MediaImage';
 
 interface ActivityDetailProps {
   activity: Activity;
@@ -41,6 +42,16 @@ export function ActivityDetail({ activity }: ActivityDetailProps) {
             )}
           </div>
         </header>
+
+        {activity.previewImage && (
+          <MediaImage
+            src={activity.previewImage}
+            alt={activity.title}
+            className="aspect-[16/9] border border-black/10 dark:border-white/10 mb-12"
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority
+          />
+        )}
 
         {activity.longDescription && (
           <div className="prose dark:prose-invert max-w-none mb-12">

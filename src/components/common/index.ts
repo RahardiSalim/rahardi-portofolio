@@ -5,3 +5,5 @@ export { DarkModeToggle } from './DarkModeToggle';
 export { TechStack } from './TechStack';
 export { ArtifactSection } from './ArtifactSection';
 export { NotebookViewer } from './NotebookViewer';
+export { MediaGallery } from './MediaGallery';
+export { MediaImage } from './MediaImage';

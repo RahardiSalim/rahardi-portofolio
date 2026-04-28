@@ -8,7 +8,6 @@ import type {
   Activity,
   Certification,
   LinkCollection,
-  ArtifactFile,
   ParsedMarkdown,
   BaseItem,
 } from '@/types';
@@ -19,32 +18,18 @@ import {
   folderToSlug,
   extractTitle,
 } from '@/lib/markdown/parser';
+import {
+  PROJECT_ROOT,
+  contentItemMediaPath,
+  getAllImagesIn,
+  getFirstImageIn,
+  getFirstPdfIn,
+  getLogoImage,
+  scanArtifacts,
+} from '@/lib/media';
 import { CONTENT_TYPES } from './portfolio-config';
 
-const CONTENT_ROOT = process.cwd();
-
-// ─── Constants & Types ─────────────────────────────────────────────────────────
-
-const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.JPG', '.JPEG', '.png', '.PNG', '.webp', '.gif']);
-
-const ARTIFACT_TYPE_MAP: Record<string, ArtifactFile['type']> = {
-  '.ipynb': 'notebook',
-  '.pdf':   'pdf',
-  '.ppt':   'pdf',
-  '.pptx':  'pdf',
-  '.mp4':   'video',
-  '.mov':   'video',
-  '.webm':  'video',
-};
-
-const ARTIFACT_CATEGORIES = new Set<ArtifactFile['category']>(['code', 'ppt', 'proposal']);
-
 // ─── Helpers ───────────────────────────────────────────────────────────────────
-
-function toApiUrl(absolutePath: string): string {
-  const relativePath = path.relative(CONTENT_ROOT, absolutePath);
-  return '/api/media/' + relativePath.split(path.sep).join('/');
-}
 
 function str(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback;
@@ -66,64 +51,6 @@ function parseStatus(status: unknown): BaseItem['status'] {
 
 function parseLinks(links: unknown): LinkCollection {
   return (typeof links === 'object' && links !== null) ? links as LinkCollection : {};
-}
-
-// ─── Scanners ──────────────────────────────────────────────────────────────────
-
-function getFirstImageIn(dir: string): string | undefined {
-  if (!fs.existsSync(dir)) return undefined;
-  try {
-    const file = fs.readdirSync(dir).find(f => IMAGE_EXTS.has(path.extname(f)));
-    return file ? toApiUrl(path.join(dir, file)) : undefined;
-  } catch { return undefined; }
-}
-
-function getAllImagesIn(dir: string): string[] {
-  if (!fs.existsSync(dir)) return [];
-  try {
-    return fs.readdirSync(dir)
-      .filter(f => IMAGE_EXTS.has(path.extname(f)))
-      .map(f => toApiUrl(path.join(dir, f)));
-  } catch { return []; }
-}
-
-function getLogoImage(folderPath: string): string | undefined {
-  const mediaDir = path.join(folderPath, 'media');
-  if (!fs.existsSync(mediaDir)) return undefined;
-  try {
-    const file = fs.readdirSync(mediaDir).find(
-      f => f.toLowerCase().startsWith('logo') && IMAGE_EXTS.has(path.extname(f))
-    );
-    return file ? toApiUrl(path.join(mediaDir, file)) : undefined;
-  } catch { return undefined; }
-}
-
-function scanArtifacts(folderPath: string): ArtifactFile[] {
-  const artifactsDir = path.join(folderPath, 'artifacts');
-  if (!fs.existsSync(artifactsDir)) return [];
-  const result: ArtifactFile[] = [];
-  try {
-    const categories = fs.readdirSync(artifactsDir);
-    for (const cat of categories) {
-      const catPath = path.join(artifactsDir, cat);
-      if (!fs.statSync(catPath).isDirectory()) continue;
-      
-      const files = fs.readdirSync(catPath);
-      for (const file of files) {
-        const ext = path.extname(file).toLowerCase();
-        const type = ARTIFACT_TYPE_MAP[ext];
-        if (!type) continue;
-        
-        result.push({
-          name: file,
-          type,
-          url: toApiUrl(path.join(catPath, file)),
-          category: ARTIFACT_CATEGORIES.has(cat as ArtifactFile['category']) ? (cat as ArtifactFile['category']) : 'other',
-        });
-      }
-    }
-  } catch { /* skip unreadable */ }
-  return result;
 }
 
 // ─── Base Item Loader ──────────────────────────────────────────────────────────
@@ -150,7 +77,7 @@ function createBaseItem(
     links: parseLinks(metadata.links),
     artifacts: scanArtifacts(folderPath),
     logoImage: getLogoImage(folderPath),
-    previewImage: getFirstImageIn(path.join(folderPath, 'media', 'photos')),
+    previewImage: getFirstImageIn(contentItemMediaPath(folderPath, 'photos')),
   };
 }
 
@@ -184,8 +111,8 @@ function transformProject(base: BaseItem, metadata: Record<string, unknown>): Pr
 }
 
 function transformCompetition(base: BaseItem, metadata: Record<string, unknown>, _folder: string, folderPath: string): Competition {
-  const certImage = getFirstImageIn(path.join(folderPath, 'media', 'certificates'));
-  const allPhotos = getAllImagesIn(path.join(folderPath, 'media', 'photos'));
+  const certImage = getFirstImageIn(contentItemMediaPath(folderPath, 'certificates'));
+  const allPhotos = getAllImagesIn(contentItemMediaPath(folderPath, 'photos'));
   
   return {
     ...base,
@@ -206,7 +133,7 @@ async function loadItems<T>(
   transform: (base: BaseItem, metadata: Record<string, unknown>, folder: string, folderPath: string) => T
 ): Promise<T[]> {
   const config = CONTENT_TYPES[type];
-  const basePath = path.join(CONTENT_ROOT, config.directory);
+  const basePath = path.join(PROJECT_ROOT, config.directory);
   const items: T[] = [];
   
   if (!fs.existsSync(basePath)) return [];
@@ -243,13 +170,8 @@ export async function loadPortfolioData(): Promise<PortfolioData> {
       role: str(meta.role) 
     } as Activity)),
     loadItems('certifications', (base, meta, _folder, folderPath) => {
-      // Find a certificate PDF in media/certificates/ and expose it as a link
-      const certsDir = path.join(folderPath, 'media', 'certificates');
-      let certificateUrl: string | undefined;
-      if (fs.existsSync(certsDir)) {
-        const pdf = fs.readdirSync(certsDir).find(f => path.extname(f).toLowerCase() === '.pdf');
-        if (pdf) certificateUrl = toApiUrl(path.join(certsDir, pdf));
-      }
+      const certificateUrl = getFirstPdfIn(contentItemMediaPath(folderPath, 'certificates'));
+
       return {
         ...base,
         issuer: str(meta.issuer),

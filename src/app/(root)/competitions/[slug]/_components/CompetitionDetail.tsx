@@ -5,12 +5,29 @@ import { motion } from 'framer-motion';
 import type { Competition } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Mdx } from '@/components/common/Mdx';
+import { MediaGallery, type MediaGalleryItem } from '@/components/common/MediaGallery';
 
 interface CompetitionDetailProps {
   competition: Competition;
 }
 
 export function CompetitionDetail({ competition }: CompetitionDetailProps) {
+  const mediaItems: MediaGalleryItem[] = [
+    ...(competition.certificateImage
+      ? [{
+          src: competition.certificateImage,
+          alt: `${competition.title} certificate`,
+          caption: 'Certificate',
+          fit: 'contain' as const,
+        }]
+      : []),
+    ...(competition.images ?? []).map((src, index) => ({
+      src,
+      alt: `${competition.title} photo ${index + 1}`,
+      caption: `Photo ${index + 1}`,
+    })),
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,6 +61,8 @@ export function CompetitionDetail({ competition }: CompetitionDetailProps) {
             {competition.scope && <Badge variant="outline">{competition.scope}</Badge>}
           </div>
         </header>
+
+        <MediaGallery items={mediaItems} title="Competition Media" />
 
         {competition.longDescription && (
           <div className="prose dark:prose-invert max-w-none">

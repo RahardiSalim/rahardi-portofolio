@@ -2,9 +2,9 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Experience } from '@/types';
+import { MediaImage } from '@/components/common/MediaImage';
 
 interface ExperienceTimelineProps {
   experiences: Experience[];
@@ -42,9 +42,13 @@ export function ExperienceTimeline({ experiences }: ExperienceTimelineProps) {
                   <div className="border border-black dark:border-gray-700 bg-white dark:bg-gray-900 p-6 group-hover:border-blue-500 dark:group-hover:border-blue-400 group-hover:shadow-xl transition-all duration-300">
                     <div className="flex items-center gap-4 mb-4">
                       {exp.logoImage && (
-                        <div className="relative w-10 h-10 flex-shrink-0 border border-gray-100 dark:border-gray-800 p-1 bg-white">
-                          <Image src={exp.logoImage} alt={exp.organization} fill className="object-contain" unoptimized />
-                        </div>
+                        <MediaImage
+                          src={exp.logoImage}
+                          alt={exp.organization}
+                          fit="contain"
+                          className="w-10 h-10 flex-shrink-0 border border-gray-100 dark:border-gray-800 bg-white p-1"
+                          sizes="40px"
+                        />
                       )}
                       <div>
                         <div className="text-[10px] font-mono uppercase tracking-tighter text-gray-400 mb-1">

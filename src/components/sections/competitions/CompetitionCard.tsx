@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { Competition } from '@/types';
 import { Card, CardBody, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { MediaImage } from '@/components/common/MediaImage';
 
 interface CompetitionCardProps {
   competition: Competition;
@@ -20,15 +20,12 @@ export function CompetitionCard({ competition, index }: CompetitionCardProps) {
     >
       {competition.previewImage && (
         <Link href={href} className="group block">
-          <div className="relative w-full h-52 overflow-hidden border-b border-black/10 dark:border-white/10">
-            <Image
-              src={competition.previewImage}
-              alt={competition.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              unoptimized
-            />
-          </div>
+          <MediaImage
+            src={competition.previewImage}
+            alt={competition.title}
+            className="w-full h-52 border-b border-black/10 dark:border-white/10"
+            imageClassName="group-hover:scale-105 transition-transform duration-500"
+          />
         </Link>
       )}
 

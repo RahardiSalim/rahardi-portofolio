@@ -6,6 +6,7 @@ import type { Project } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Mdx } from '@/components/common/Mdx';
 import { ArtifactSection } from '@/components/common/ArtifactSection';
+import { MediaImage } from '@/components/common/MediaImage';
 
 interface ProjectDetailProps {
   project: Project;
@@ -45,6 +46,16 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
             {project.role && <Badge variant="outline">{project.role}</Badge>}
           </div>
         </header>
+
+        {project.previewImage && (
+          <MediaImage
+            src={project.previewImage}
+            alt={project.title}
+            className="aspect-[16/9] border border-black/10 dark:border-white/10 mb-12"
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority
+          />
+        )}
 
         {project.technologies && project.technologies.length > 0 && (
           <div className="mb-12">

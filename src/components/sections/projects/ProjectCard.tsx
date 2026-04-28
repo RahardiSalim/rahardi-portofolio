@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { Project } from '@/types';
 import { Card, CardBody, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { TechStack } from '@/components/common/TechStack';
+import { MediaImage } from '@/components/common/MediaImage';
 
 interface ProjectCardProps {
   project: Project;
@@ -22,20 +22,13 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           delay={index * 0.1}
           className="h-full flex flex-col border border-black dark:border-gray-700 hover:border-black dark:hover:border-white hover:shadow-xl transition-all duration-300 overflow-hidden"
         >
-          <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-800 overflow-hidden border-b border-black dark:border-gray-700">
-            {project.previewImage ? (
-              <Image
-                src={project.previewImage}
-                alt={project.title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                unoptimized
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full opacity-20">
-                <span className="text-6xl font-mono">{project.title.charAt(0)}</span>
-              </div>
-            )}
+          <MediaImage
+            src={project.previewImage}
+            alt={project.title}
+            fallbackLabel={project.title.charAt(0)}
+            className="w-full h-48 border-b border-black dark:border-gray-700"
+            imageClassName="group-hover:scale-110 transition-transform duration-700"
+          >
             {artifactCount > 0 && (
               <div className="absolute bottom-3 right-3 bg-white/90 dark:bg-black/90 px-2 py-1 text-[10px] font-mono border border-black dark:border-white flex items-center gap-1">
                 <span className="animate-pulse">●</span> {artifactCount} ARTIFACTS
@@ -44,7 +37,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             <div className="absolute top-3 left-3">
               <Badge variant="default" className="text-[10px] py-0.5">{badge}</Badge>
             </div>
-          </div>
+          </MediaImage>
 
           <div className="p-6 flex-1 flex flex-col">
             <div className="mb-4">
