@@ -41,6 +41,7 @@ interface ActiveMove extends LayerMove {
   cubies: THREE.Mesh[];
   elapsed: number;
   duration: number;
+  isPending: boolean;
 }
 
 const CUBE_SIZE = 0.92;
@@ -196,6 +197,10 @@ function createFaceMove(turn: FaceTurn): LayerMove {
 
 function randomMove(): LayerMove {
   return createFaceMove(RANDOM_FACE_TURNS[Math.floor(Math.random() * RANDOM_FACE_TURNS.length)]);
+}
+
+function invertFaceTurn(turn: FaceTurn): FaceTurn {
+  return turn.endsWith("'") ? (turn[0] as Face) : (`${turn[0]}'` as FaceTurn);
 }
 
 function randomInteger(min: number, max: number): number {
@@ -408,6 +413,7 @@ export function HeroImage() {
     let solverWorker: Worker | null = null;
     let lastPointer = { x: 0, y: 0 };
     const moveQueue: LayerMove[] = [];
+    const completedPendingMoves: FaceTurn[] = [];
     const targetRotation = new THREE.Euler(cubeRoot.rotation.x, cubeRoot.rotation.y, cubeRoot.rotation.z);
 
     const resize = () => {
@@ -444,16 +450,30 @@ export function HeroImage() {
         waitingForSolution = false;
         solvingSequence = true;
         solveRequested = false;
-        const solutionMoves = parseAlgorithm(message.algorithm);
 
-        if (solutionMoves.length === 0) {
+        // Collect moves applied to the cube during the worker wait so they can be undone
+        const activePendingNotation = activeMove?.isPending ? activeMove.notation : null;
+        if (activeMove) activeMove.isPending = false;
+        const allPending: FaceTurn[] = [
+          ...completedPendingMoves,
+          ...(activePendingNotation ? [activePendingNotation] : []),
+        ];
+        completedPendingMoves.length = 0;
+        // Clear any queued pending idle moves that have not started yet
+        moveQueue.length = 0;
+
+        const undoMoves = allPending.slice().reverse().map((n) => createFaceMove(invertFaceTurn(n)));
+        const solutionMoves = parseAlgorithm(message.algorithm);
+        const combinedMoves = [...undoMoves, ...solutionMoves];
+
+        if (combinedMoves.length === 0) {
           solvingSequence = false;
           container.dataset.shuffleState = 'idle';
           updateSolvedState();
           return;
         }
 
-        enqueueMoves(solutionMoves);
+        enqueueMoves(combinedMoves);
         return;
       }
 
@@ -512,15 +532,17 @@ export function HeroImage() {
 
     const requestSolve = () => {
       moveQueue.length = 0;
+      completedPendingMoves.length = 0;
+      if (activeMove) activeMove.isPending = false;
       solveRequested = true;
       solvingSequence = false;
+      waitingForSolution = false;
 
-      if (activeMove) {
-        finishMove(activeMove);
-        return;
+      if (!activeMove) {
+        requestSolution();
       }
-
-      requestSolution();
+      // If there is an active move, let it finish naturally;
+      // finishMove will call requestSolution when done.
     };
 
     const queueShuffle = (turns = 7) => {
@@ -542,6 +564,7 @@ export function HeroImage() {
         cubies: layerCubies,
         elapsed: 0,
         duration: solvingSequence ? SOLVE_TURN_DURATION : TURN_DURATION,
+        isPending: waitingForSolution,
       };
       container.dataset.shuffleState = solvingSequence ? 'solving' : 'turning';
     };
@@ -564,6 +587,9 @@ export function HeroImage() {
       cubeRoot.remove(move.pivot);
       cubeModel.move(move.notation);
       updateSolvedState();
+      if (move.isPending && waitingForSolution) {
+        completedPendingMoves.push(move.notation);
+      }
       activeMove = null;
 
       if (solveRequested) {
@@ -589,7 +615,12 @@ export function HeroImage() {
       cubeRoot.rotation.y = THREE.MathUtils.lerp(cubeRoot.rotation.y, targetRotation.y, 0.08);
       cubeRoot.rotation.z = THREE.MathUtils.lerp(cubeRoot.rotation.z, 0.12, 0.04);
 
-      if (!activeMove && moveQueue.length > 0 && !waitingForSolution) {
+      // Keep the cube doing slow idle turns while the worker computes a solution
+      if (!activeMove && moveQueue.length === 0 && waitingForSolution) {
+        moveQueue.push(randomMove());
+      }
+
+      if (!activeMove && moveQueue.length > 0) {
         const nextMove = moveQueue.shift();
         if (nextMove) startMove(nextMove);
       }
